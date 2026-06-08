@@ -48,7 +48,7 @@ This project develops a **Machine Learning** system to assist healthcare profess
 ## ⚙️ Installation
 
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn xgboost shap openpyxl
+pip install -r requirements.txt
 ```
 
 ---
@@ -83,26 +83,55 @@ Five algorithms evaluated with **stratified cross-validation (5-fold)**:
 | Random Forest       | Ensemble, reduces overfitting                        |
 | XGBoost             | Gradient boosting, state-of-the-art for tabular data |
 
-### 4. Explainability
+### 4. Hyperparameter Optimization
+
+A RandomizedSearchCV-based optimization was performed on the XGBoost model using 5-fold stratified cross-validation.
+
+The optimization focused on maximizing Recall, a critical metric in medical screening scenarios where false negatives have a higher clinical impact.
+
+The search space included:
+
+- n_estimators
+- max_depth
+- learning_rate
+- subsample
+- colsample_bytree
+- min_child_weight
+- gamma
+- scale_pos_weight
+
+### 5. Explainability
 
 - **Feature Importance** via Random Forest (Gini)
 - **SHAP Values** via XGBoost (global and local)
 
 ---
 
+## ⚙️ Hyperparameter Optimization
+
+An additional optimization phase was conducted using RandomizedSearchCV and 5-fold stratified cross-validation.
+
+The XGBoost model was selected for optimization due to its strong performance in tabular classification tasks.
+
+Class imbalance was addressed through the use of the scale_pos_weight parameter.
+
+The optimization objective was Recall, prioritizing the identification of patients with PCOS.
+
 ## 📊 Results
 
-### Test Set (20% of data)
+### Best Model
 
-| Model               | Accuracy  | Precision | Recall    | F1-Score  | AUC-ROC   |
-| ------------------- | --------- | --------- | --------- | --------- | --------- |
-| **XGBoost**         | **93.6%** | **96.8%** | 83.3%     | **89.6%** | **95.4%** |
-| Random Forest       | 90.8%     | 93.3%     | 77.8%     | 84.9%     | 94.9%     |
-| Logistic Regression | 89.0%     | 81.6%     | **86.1%** | 83.8%     | 95.1%     |
-| Decision Tree       | 88.1%     | 84.9%     | 77.8%     | 81.2%     | 92.5%     |
-| KNN                 | 85.3%     | 91.7%     | 61.1%     | 73.3%     | 93.7%     |
+The Logistic Regression model achieved the best balance between Recall, F1-Score and interpretability.
 
-> **XGBoost** was the best overall model. **Logistic Regression** stood out in Recall — the priority metric in a medical context, where false negatives carry a high cost.
+| Metric    | Value  |
+| --------- | ------ |
+| Accuracy  | 91.74% |
+| Precision | 88.57% |
+| Recall    | 86.11% |
+| F1-Score  | 87.32% |
+| AUC-ROC   | 95.02% |
+
+Given the clinical context of PCOS screening, Recall was considered one of the most important metrics because false negatives may delay diagnosis and treatment.
 
 ### Cross-Validation (5-fold, training set)
 
